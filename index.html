@@ -1,0 +1,76 @@
+<!-- reminder.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reminder</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+  </style>
+</head>
+<body>
+  <div width="300px" height="200px" style="padding: 20px; background-color: white; color: black;">
+    <small>Reminder</small> <br>
+    <h1 id="taskText">Reminder</h1>
+    <button onclick="snooze()">Snooze</button>
+    <button onclick="window.close()">Cancel</button>
+  </div>
+
+  <script>
+ 
+    
+    // Display task name passed via query param
+    const tasks = new URLSearchParams(window.location.search).get('task');
+    document.getElementById('taskText').innerHTML = tasks;
+
+    
+
+    async function snooze() {
+      let task = tasks;
+
+      if (task.endsWith("<br>")) {
+        task = task.slice(0, -4);
+      }
+      const now = new Date();
+      const plus5 = new Date(now.getTime() + 1 * 60000);
+
+      const datetime = getDateTimeLocalFormat(plus5);
+
+     
+      await window.reminderAPI.snoozeReminder(task, datetime);
+        //alert('Snoozed for 5 minutes');
+      window.close();
+    }
+
+
+    function getDateTimeLocalFormat(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+ 
+  </script>
+</body>
+</html>

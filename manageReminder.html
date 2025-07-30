@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+    <head>
+        <title> Manage Reminders </title>
+        <style>
+            body{
+                font-family: sans-serif;
+                padding: 0px 5px;
+            }
+           
+            input{
+                width: 300px;
+                border: none;
+                border-bottom: 1px solid gray;
+                padding: 10px 15px;
+                padding-left: 0;
+            }
+            input::placeholder{
+                font-size: medium;
+            }
+            button {
+                padding: 5px 10px;
+                cursor: pointer;
+
+            }
+            .rem-item{
+                padding: 5px 10px;
+                margin-top: 5px;
+                
+            }
+        </style>
+    </head>
+    <body>
+
+        <h2> Add Reminder </h2>
+
+        <input type="text" id="task" placeholder="Enter your reminder here..." />
+        <br>
+        <input type="datetime-local" id="datetime"  />
+        <br><br>
+        <button onclick="addReminder()"> Add Reminder </button>
+        <br><br>
+        <hr>
+        <div id="reminders-container" style="overflow-y: scroll; max-height: 300px; min-height: 300px;" ></div>
+
+
+
+
+        <script>
+           
+           async function getReminder() {
+            const reminders = await window.reminderAPI.getReminder();
+            let rem = "";
+            reminders.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+            reminders.forEach(element => {
+
+                rem = rem + `<div class='rem-item'> ${element.task} </br> <small> ${element.datetime} </small> <button onclick="deleteReminder(${element.id})">Del</button>  </div>`;                   
+                }); 
+
+                document.getElementById('reminders-container').innerHTML = rem;
+            }
+            getReminder();
+
+            async function addReminder() {
+                const task = document.getElementById('task').value;
+                const datetime = document.getElementById('datetime').value;
+                console.log("logging " + document.getElementById('task').value);
+                if(!task || !datetime){
+                    if(!task) document.getElementById('task').focus();
+                    else if(!task) document.getElementById('datetime').focus();
+                    return;
+                }
+                if (new Date(datetime) < new Date()) {
+                    alert("Please select a future date and time.");
+                    document.getElementById('datetime').focus();   
+                    return;
+                }
+                await window.reminderAPI.addReminder(task, datetime);
+
+                getReminder();
+            }
+ 
+
+            async function deleteReminder(id){
+                const updatedReminders = await window.reminderAPI.deleteReminder(id);
+                let rem = "";
+                updatedReminders.forEach(element => {
+
+                rem = rem + `<div class='rem-item'> ${element.task} </br> <small> ${element.datetime} </small> <button onclick="deleteReminder(${element.id})">Del</button>  </div>`;                   
+                }); 
+
+                document.getElementById('reminders-container').innerHTML = rem;
+            }
+
+            
+        </script>
+    </body>
+</html>
