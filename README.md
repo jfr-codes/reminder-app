@@ -15,6 +15,7 @@ It allows users to create, view, delete, and snooze reminders with a clean inter
 ---
 
 🛠 Tech Stack
+---
 
 - **Electron** – Desktop app framework
 - **Node.js** – Backend logic
